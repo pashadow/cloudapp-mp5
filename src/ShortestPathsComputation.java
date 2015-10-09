@@ -11,7 +11,7 @@ import java.io.IOException;
  * Compute shortest paths from a given source.
  */
 public class ShortestPathsComputation extends BasicComputation<
-    IntWritable, IntWritable, NullWritable, IntWritable> {
+    IntWritable, IntWritable, IntWritable, IntWritable> {
   /** The shortest paths id */
   public static final LongConfOption SOURCE_ID =
       new LongConfOption("SimpleShortestPathsVertex.sourceId", 1,
@@ -29,7 +29,7 @@ public class ShortestPathsComputation extends BasicComputation<
 
   @Override
   public void compute(
-      Vertex<IntWritable, IntWritable, NullWritable> vertex,
+      Vertex<IntWritable, IntWritable, IntWritable> vertex,
       Iterable<IntWritable> messages) throws IOException {
     if (getSuperstep() == 0) {
       vertex.setValue(new IntWritable(Integer.MAX_VALUE));
@@ -40,7 +40,7 @@ public class ShortestPathsComputation extends BasicComputation<
     }
     if (minDist < vertex.getValue().get()) {
       vertex.setValue(new IntWritable(minDist));
-      for (Edge<IntWritable, NullWritable> edge : vertex.getEdges()) {
+      for (Edge<IntWritable, IntWritable> edge : vertex.getEdges()) {
         int distance = minDist + edge.getValue().get();
         sendMessage(edge.getTargetVertexId(), new IntWritable(distance));
       }
