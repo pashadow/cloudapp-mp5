@@ -36,9 +36,9 @@ public final class KMeansMP {
         JavaSparkContext sc = new JavaSparkContext(sparkConf);
 
         //TODO
-
+/*
         results.saveAsTextFile(results_path);
-
+*/
         sc.stop();
     }
 }
