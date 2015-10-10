@@ -28,9 +28,7 @@ public class ShortestPathsComputation extends BasicComputation<
   }
 
   @Override
-  public void compute(
-      Vertex<IntWritable, IntWritable, NullWritable> vertex,
-      Iterable<IntWritable> messages) throws IOException {
+  public void compute(Vertex<IntWritable, IntWritable, NullWritable> vertex, Iterable<IntWritable> messages) throws IOException {
     if (getSuperstep() == 0) {
       vertex.setValue(new IntWritable(Integer.MAX_VALUE));
     }
@@ -40,10 +38,10 @@ public class ShortestPathsComputation extends BasicComputation<
     }
     if (minDist < vertex.getValue().get()) {
       vertex.setValue(new IntWritable(minDist));
-//      for (Edge<IntWritable, IntWritable> edge : vertex.getEdges()) {
-//        int distance = minDist + edge.getValue().get();
-//        sendMessage(edge.getTargetVertexId(), new IntWritable(distance));
-//      }
+      for (Edge<IntWritable, NullWritable> edge : vertex.getEdges()) {
+        int distance = minDist + 1;
+       sendMessage(edge.getTargetVertexId(), new IntWritable(distance));
+      }
     }
     vertex.voteToHalt();
   }
