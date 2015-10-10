@@ -27,7 +27,7 @@ public final class RandomForestMP {
             for (int i = 1; i < tok.length; ++i) {
                 point[i-1] = Double.parseDouble(tok[i]);
             }
-            return LabeledPoint(Double.parseDouble(tok[0]), Vectors.dense(point));
+            return new LabeledPoint(Double.parseDouble(tok[0]), Vectors.dense(point));
         }
     }
 
