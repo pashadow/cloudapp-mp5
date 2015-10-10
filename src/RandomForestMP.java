@@ -66,13 +66,14 @@ public final class RandomForestMP {
 		System.out.println("Test Error: " + testErr);
 		System.out.println("Learned classification forest model:\n" + model.toDebugString());		
 
-        JavaRDD<LabeledPoint> results = predictionAndLabel.map(new Function<Vector, LabeledPoint>() {
+        JavaRDD<LabeledPoint> results = testData.map(new Function<Vector, LabeledPoint>() {
             public LabeledPoint call(Vector points) {
                 return new LabeledPoint(model.predict(points), points);
             }
         });
 
         results.saveAsTextFile(results_path);
+	
         sc.stop();
     }
 
