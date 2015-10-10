@@ -28,8 +28,12 @@ public final class RandomForestMP {
 
         SparkConf sparkConf = new SparkConf().setAppName("RandomForestMP");
         JavaSparkContext sc = new JavaSparkContext(sparkConf);
-        final RandomForestModel model;
-
+		
+		// Load and parse the data files
+		JavaRDD<LabeledPoint> trainingData = MLUtils.loadLibSVMFile(sc.sc(), training_data_path).toJavaRDD();
+		JavaRDD<LabeledPoint> testData = MLUtils.loadLibSVMFile(sc.sc(), test_data_path).toJavaRDD();
+		
+		// Train a RandomForest model
         Integer numClasses = 2;
         HashMap<Integer, Integer> categoricalFeaturesInfo = new HashMap<Integer, Integer>();
         Integer numTrees = 3;
@@ -39,16 +43,33 @@ public final class RandomForestMP {
         Integer maxBins = 32;
         Integer seed = 12345;
 
-		// TODO
-/*
-        JavaRDD<LabeledPoint> results = test.map(new Function<Vector, LabeledPoint>() {
+		final RandomForestModel model = RandomForest.trainClassifier(trainingData, numClasses, categoricalFeaturesInfo, numTrees, featureSubsetStrategy, impurity, maxDepth, maxBins, seed);
+		
+		// Evaluate model on test instances and compute test error
+		JavaPairRDD<Double, Double> predictionAndLabel =
+		  testData.mapToPair(new PairFunction<LabeledPoint, Double, Double>() {
+			@Override
+			public Tuple2<Double, Double> call(LabeledPoint p) {
+			  return new Tuple2<Double, Double>(model.predict(p.features()), p.label());
+			}
+		  });
+		Double testErr =
+		  1.0 * predictionAndLabel.filter(new Function<Tuple2<Double, Double>, Boolean>() {
+			@Override
+			public Boolean call(Tuple2<Double, Double> pl) {
+			  return !pl._1().equals(pl._2());
+			}
+		  }).count() / testData.count();
+		System.out.println("Test Error: " + testErr);
+		System.out.println("Learned classification forest model:\n" + model.toDebugString());		
+
+        JavaRDD<LabeledPoint> results = predictionAndLabel.map(new Function<Vector, LabeledPoint>() {
             public LabeledPoint call(Vector points) {
                 return new LabeledPoint(model.predict(points), points);
             }
         });
 
         results.saveAsTextFile(results_path);
-*/
         sc.stop();
     }
 
