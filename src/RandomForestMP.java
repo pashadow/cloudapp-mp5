@@ -23,11 +23,12 @@ public final class RandomForestMP {
 
         public LabeledPoint call(String line) {
             String[] tok = SPACE.split(line);
-            double[] point = new double[tok.length-1];
-            for (int i = 1; i < tok.length; ++i) {
-                point[i-1] = Double.parseDouble(tok[i]);
-            }
-            return new LabeledPoint(Double.parseDouble(tok[0]), Vectors.dense(point));
+			double label = Double.parseDouble(tok[tok.length-1]);
+			double[] point = new double[tok.length-1];
+			for (int i = 0; i < tok.length - 1; ++i) {
+				point[i] = Double.parseDouble(tok[i]);
+			}
+			return new LabeledPoint(label, Vectors.dense(point));
         }
     }
 
@@ -37,8 +38,8 @@ public final class RandomForestMP {
         public Vector call(String line) {
             String[] tok = SPACE.split(line);
 			double[] point = new double[tok.length-1];
-            for (int i = 1; i < tok.length; ++i) {
-                point[i-1] = Double.parseDouble(tok[i]);
+            for (int i = 0; i < tok.length - 1; ++i) {
+                point[i] = Double.parseDouble(tok[i]);
             }
             return Vectors.dense(point);			
         }
@@ -58,12 +59,8 @@ public final class RandomForestMP {
         JavaSparkContext sc = new JavaSparkContext(sparkConf);
 		
 		// Load and parse the data files
-		JavaRDD<String> lines_training_data = sc.textFile(training_data_path);
-		JavaRDD<String> lines_test_data = sc.textFile(test_data_path);
-		
-		
-		JavaRDD<LabeledPoint> trainingData = lines_training_data.map(new ParseTrainingData());
-		JavaRDD<Vector> testData = lines_test_data.map(new ParseTestData());
+		JavaRDD<LabeledPoint> trainingData = sc.textFile(training_data_path).map(new ParseTrainingData());
+		JavaRDD<Vector> testData = sc.textFile(test_data_path).map(new ParseTestData());
 		
 		// Train a RandomForest model
         Integer numClasses = 2;
