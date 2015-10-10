@@ -34,6 +34,7 @@ public final class RandomForestMP {
 		
 		// Load and parse the data files
 		JavaRDD<LabeledPoint> trainingData = MLUtils.loadLibSVMFile(sc.sc(), training_data_path).toJavaRDD();
+		
 		JavaRDD<LabeledPoint> testData = MLUtils.loadLibSVMFile(sc.sc(), test_data_path).toJavaRDD();
 		
 		// Train a RandomForest model
@@ -65,7 +66,7 @@ public final class RandomForestMP {
 		  }).count() / testData.count();
 		System.out.println("Test Error: " + testErr);
 		System.out.println("Learned classification forest model:\n" + model.toDebugString());		
-
+/*
         JavaRDD<LabeledPoint> results = testData.map(new Function<Vector, LabeledPoint>() {
             public LabeledPoint call(Vector points) {
                 return new LabeledPoint(model.predict(points), points);
@@ -73,7 +74,7 @@ public final class RandomForestMP {
         });
 
         results.saveAsTextFile(results_path);
-	
+*/
         sc.stop();
     }
 
