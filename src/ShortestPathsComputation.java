@@ -26,7 +26,9 @@ public class ShortestPathsComputation extends BasicComputation<
   private boolean isSource(Vertex<IntWritable, ?, ?> vertex) {
     return vertex.getId().get() == SOURCE_ID.get(getConf());
   }
-
+/**
+* http://faculty.simpson.edu/lydia.sinapova/www/cmsc250/LN250_Weiss/L21-MinPath.htm
+*/
   @Override
   public void compute(Vertex<IntWritable, IntWritable, NullWritable> vertex, Iterable<IntWritable> messages) throws IOException {
     if (getSuperstep() == 0) {
