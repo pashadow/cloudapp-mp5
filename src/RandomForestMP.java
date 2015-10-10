@@ -74,24 +74,6 @@ public final class RandomForestMP {
 
 		final RandomForestModel model = RandomForest.trainClassifier(trainingData, numClasses, categoricalFeaturesInfo, numTrees, featureSubsetStrategy, impurity, maxDepth, maxBins, seed);
 		
-/*		// Evaluate model on test instances and compute test error
-		JavaPairRDD<Double, Double> predictionAndLabel =
-		  testData.mapToPair(new PairFunction<LabeledPoint, Double, Double>() {
-			@Override
-			public Tuple2<Double, Double> call(LabeledPoint p) {
-			  return new Tuple2<Double, Double>(model.predict(p.features()), p.label());
-			}
-		  });
-		Double testErr =
-		  1.0 * predictionAndLabel.filter(new Function<Tuple2<Double, Double>, Boolean>() {
-			@Override
-			public Boolean call(Tuple2<Double, Double> pl) {
-			  return !pl._1().equals(pl._2());
-			}
-		  }).count() / testData.count();
-		System.out.println("Test Error: " + testErr);
-		System.out.println("Learned classification forest model:\n" + model.toDebugString());		
-*/
         JavaRDD<LabeledPoint> results = testData.map(new Function<Vector, LabeledPoint>() {
             public LabeledPoint call(Vector points) {
                 return new LabeledPoint(model.predict(points), points);
